@@ -6,7 +6,7 @@ const rootReducer = (state = initialState, action: ActionTypes): IState => {
   switch (action.type) {
     case PLAYER_STATS_LOADED:
       return Object.assign({}, state, {
-        playerStats: action.paylaod,
+        playerStats: action.payload,
       });
     default:
       return state;

@@ -23,7 +23,7 @@ function* workerSaga(action: IPlayerStatsRequested): any {
   try {
     // @ts-ignore
     const payload = yield call(getPlayerStats, after);
-    yield putResolve({ type: PLAYER_STATS_LOADED });
+    yield putResolve({ type: PLAYER_STATS_LOADED, payload });
   } catch (e) {
     yield put({ type: API_ERRORED, payload: e });
   }

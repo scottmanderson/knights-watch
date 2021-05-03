@@ -11,7 +11,7 @@ export const PLAYER_STATS_LOADED = "PLAYER_STATS_LOADED";
 
 export interface IPlayerStatsLoaded {
   type: typeof PLAYER_STATS_LOADED;
-  paylaod: IPlayerStats;
+  payload: IPlayerStats;
 }
 
 export const API_ERRORED = "API_ERRORED";

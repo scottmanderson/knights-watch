@@ -1,10 +1,10 @@
 export interface IPlayerStats {
-  gameCount: Number;
-  winCount: Number;
-  lossCount: Number;
-  drawCount: Number;
-  ratingsHistory: Number[];
-  ratingsHistoryDates: Number[];
+  gameCount: number;
+  winCount: number;
+  lossCount: number;
+  drawCount: number;
+  ratingsHistory: number[];
+  ratingsHistoryDates: number[];
 }
 
 export interface IState {
