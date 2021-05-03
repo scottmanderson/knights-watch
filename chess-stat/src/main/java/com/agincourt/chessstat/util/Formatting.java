@@ -13,8 +13,8 @@ import java.util.List;
 public class Formatting {
 
     public static String jsonifyGames(List<ChessGame> games) throws JsonProcessingException {
-    ObjectMapper mapper = new ObjectMapper();
-    return mapper.writeValueAsString(games);
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(games);
     }
 
     public static <T> String jsonifyStats(T stats) throws JsonProcessingException {

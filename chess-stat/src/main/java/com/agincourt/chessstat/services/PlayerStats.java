@@ -11,7 +11,8 @@ public class PlayerStats {
     List<Integer> ratingsHistory;
     List<Long> ratingsHistoryDates;
 
-    PlayerStats() {}
+    PlayerStats() {
+    }
 
     public Long getGameCount() {
         return gameCount;

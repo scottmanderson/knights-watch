@@ -10,9 +10,11 @@ import java.util.List;
 public interface ChessGameRepository extends JpaRepository<ChessGame, Long> {
 
     List<ChessGame> findAllByOrderByLastMoveAtAsc();
+
     List<ChessGame> findByPlayerColorIsOrderByLastMoveAtAsc(String color);
 
     List<ChessGame> findByLastMoveAtAfterOrderByLastMoveAtAsc(Long timestamp);
+
     List<ChessGame> findByPlayerColorIsAndLastMoveAtOrderByLastMoveAtAsc(String color, Long timestamp);
 
 }

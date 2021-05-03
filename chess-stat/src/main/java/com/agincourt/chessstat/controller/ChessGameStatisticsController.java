@@ -16,8 +16,8 @@ public class ChessGameStatisticsController {
     private ChessGameStatisticsService chessGameStatisticsService;
 
     @GetMapping(value = "/statistics", produces = "application/json")
-    String providePlayerStatistics(@RequestParam(value="after", required = false) String isoDate) throws JsonProcessingException, ParseException {
-        if (isoDate==null) {
+    String providePlayerStatistics(@RequestParam(value = "after", required = false) String isoDate) throws JsonProcessingException, ParseException {
+        if (isoDate == null) {
             return chessGameStatisticsService.playerStats();
         } else {
             return chessGameStatisticsService.playerStats(isoDate);
