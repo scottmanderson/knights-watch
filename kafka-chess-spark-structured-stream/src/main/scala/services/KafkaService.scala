@@ -13,7 +13,7 @@ trait KafkaService extends Logging {
   val brokers: String = KafkaConfig.getValue("broker")
   val sourceTopic: String = KafkaConfig.getValue("source.topic")
   val groupId: String = KafkaConfig.getValue("source.group.id")
-  val fromBeginning: String =
+  val fromBeginningOrEnd: String =
     if (KafkaConfig.getBoolean("source.earliest")) "earliest" else "latest"
 
   /**
@@ -45,7 +45,7 @@ trait KafkaService extends Logging {
     Map(
       ("kafka.bootstrap.servers", brokers),
       ("group.id", groupId),
-      ("startingOffsets", fromBeginning),
+      ("startingOffsets", fromBeginningOrEnd),
       ("subscribe", sourceTopic)
     )
 }
