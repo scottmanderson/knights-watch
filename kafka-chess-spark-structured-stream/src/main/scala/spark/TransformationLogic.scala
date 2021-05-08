@@ -2,6 +2,7 @@ package spark
 
 import models.{ChessGameDbModel, ChessGameKafkaRecord}
 import org.apache.spark.sql.functions.{col, udf, when}
+import org.apache.spark.sql.types.IntegerType
 import org.apache.spark.sql.{DataFrame, Dataset, SparkSession}
 import utils.ConfigManager.UserConfig
 
@@ -34,11 +35,17 @@ trait TransformationLogic {
     val whiteTimeRemaining = if (whiteTimeHistory.nonEmpty) whiteTimeHistory.last.toString else ""
     val blackTimeRemaining = if (blackTimeHistory.nonEmpty) blackTimeHistory.last.toString else ""
 
+    val playerTimeEndingSurplus = if (whiteTimeSurplusHistory.nonEmpty && blackTimeSurplusHistory.nonEmpty)
+      (if (whitePlayerId == playerHandle) whiteTimeSurplusHistory.last else blackTimeSurplusHistory.last)
+      else 0
+
+
     val clockFields: Map[String, String] = Map(
       "whiteTimeRemaining" -> whiteTimeRemaining,
       "blackTimeRemaining" -> blackTimeRemaining,
       "playerTimeRemaining" -> (if (whitePlayerId == playerHandle) whiteTimeRemaining else blackTimeRemaining),
       "opponentTimeRemaining" -> (if (whitePlayerId == playerHandle) blackTimeRemaining else whiteTimeRemaining),
+      "playerTimeEndingSurplus" -> playerTimeEndingSurplus.toString,
       "whiteTimeHistory" -> whiteTimeHistory.mkString(","),
       "blackTimeHistory" -> blackTimeHistory.mkString(","),
       "whiteTimeSurplusHistory" -> whiteTimeSurplusHistory.mkString(","),  // keeping Time Surplus Histories by color as they may be useful to determine if there is a general time management bias
@@ -69,15 +76,19 @@ trait TransformationLogic {
         .select(
           col("*"),
           col("timeOutput")
-            .getItem("whiteTimeRemaining").as("whiteTimeRemaining"),
+            .getItem("whiteTimeRemaining").as("whiteTimeRemaining").cast(IntegerType),
           col("timeOutput")
-            .getItem("blackTimeRemaining").as("blackTimeRemaining"),
+            .getItem("blackTimeRemaining").as("blackTimeRemaining").cast(IntegerType),
           col("timeOutput")
-            .getItem("playerTimeRemaining").as("playerTimeRemaining"),
+            .getItem("playerTimeRemaining").as("playerTimeRemaining").cast(IntegerType),
           col("timeOutput")
-            .getItem("opponentTimeRemaining").as("opponentTimeRemaining"),
-          col("timeOutput").getItem("whiteTimeHistory").as("whiteTimeHistory"),
-          col("timeOutput").getItem("blackTimeHistory").as("blackTimeHistory"),
+            .getItem("opponentTimeRemaining").as("opponentTimeRemaining").cast(IntegerType),
+          col("timeOutput")
+            .getItem("playerTimeEndingSurplus").as("playerTimeEndingSurplus").cast(IntegerType),
+          col("timeOutput")
+            .getItem("whiteTimeHistory").as("whiteTimeHistory"),
+          col("timeOutput")
+            .getItem("blackTimeHistory").as("blackTimeHistory"),
           col("timeOutput")
             .getItem("whiteTimeSurplusHistory").as("whiteTimeSurplusHistory"),
           col("timeOutput")
