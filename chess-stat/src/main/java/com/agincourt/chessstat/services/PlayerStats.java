@@ -10,6 +10,7 @@ public class PlayerStats {
 
     List<Integer> ratingsHistory;
     List<Long> ratingsHistoryDates;
+    List<Integer> playerTimeEndingSurpluses;
 
     PlayerStats() {
     }
@@ -60,5 +61,13 @@ public class PlayerStats {
 
     public void setRatingsHistoryDates(List<Long> ratingsHistoryDates) {
         this.ratingsHistoryDates = ratingsHistoryDates;
+    }
+
+    public List<Integer> getPlayerTimeEndingSurpluses() {
+        return playerTimeEndingSurpluses;
+    }
+
+    public void setPlayerTimeEndingSurpluses(List<Integer> playerTimeEndingSurpluses) {
+        this.playerTimeEndingSurpluses = playerTimeEndingSurpluses;
     }
 }

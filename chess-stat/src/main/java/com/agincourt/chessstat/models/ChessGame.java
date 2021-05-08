@@ -35,8 +35,8 @@ public class ChessGame implements Serializable {
     private Integer clockInitial;
     private Integer clockIncrement;
     private Integer clockTotalTime;
-    private String whiteTimeRemaining;
-    private String blackTimeRemaining;
+    private Integer whiteTimeRemaining;
+    private Integer blackTimeRemaining;
     @Column(columnDefinition = "text")
     private String whiteTimeHistory;
     @Column(columnDefinition = "text")
@@ -45,9 +45,9 @@ public class ChessGame implements Serializable {
     private String playerColor;
     private Integer playerRating;
     private Integer playerRatingDiff;
-    private String playerTimeRemaining;
-    private String opponentTimeRemaining;
-    private String playerTimeEndingSurplus;
+    private Integer playerTimeRemaining;
+    private Integer opponentTimeRemaining;
+    private Integer playerTimeEndingSurplus;
     @Column(columnDefinition = "text")
     private String whiteTimeSurplusHistory;
     @Column(columnDefinition = "text")
@@ -65,11 +65,12 @@ public class ChessGame implements Serializable {
                      Integer whitePlayerRatingDiff, String blackPlayerId, Integer blackPlayerRating,
                      Integer blackPlayerRatingDiff, String winner, String openingEco, String openingName,
                      Integer openingPly, String moves, String pgn, Integer clockInitial, Integer clockIncrement,
-                     Integer clockTotalTime, String whiteTimeRemaining, String blackTimeRemaining, String whiteTimeHistory,
-                     String blackTimeHistory, Double playerScore, String playerColor, Integer playerRating,
-                     Integer playerRatingDiff, String playerTimeRemaining, String opponentTimeRemaining,
-                     String playerTimeEndingSurplus, String whiteTimeSurplusHistory, String blackTimeSurplusHistory,
-                     String playerTimeSurplusHistory, String opponentTimeSurplusHistory) {
+                     Integer clockTotalTime, Integer whiteTimeRemaining, Integer blackTimeRemaining,
+                     String whiteTimeHistory, String blackTimeHistory, Double playerScore, String playerColor,
+                     Integer playerRating, Integer playerRatingDiff, Integer playerTimeRemaining,
+                     Integer opponentTimeRemaining, Integer playerTimeEndingSurplus, String whiteTimeSurplusHistory,
+                     String blackTimeSurplusHistory, String playerTimeSurplusHistory, String opponentTimeSurplusHistory) {
+       
         this.lichessId = lichessId;
         this.rated = rated;
         this.variant = variant;
@@ -206,11 +207,11 @@ public class ChessGame implements Serializable {
         return clockTotalTime;
     }
 
-    public String getWhiteTimeRemaining() {
+    public Integer getWhiteTimeRemaining() {
         return whiteTimeRemaining;
     }
 
-    public String getBlackTimeRemaining() {
+    public Integer getBlackTimeRemaining() {
         return blackTimeRemaining;
     }
 
@@ -238,11 +239,11 @@ public class ChessGame implements Serializable {
         return playerRatingDiff;
     }
 
-    public String getPlayerTimeRemaining() {
+    public Integer getPlayerTimeRemaining() {
         return playerTimeRemaining;
     }
 
-    public String getOpponentTimeRemaining() {
+    public Integer getOpponentTimeRemaining() {
         return opponentTimeRemaining;
     }
 
@@ -342,11 +343,11 @@ public class ChessGame implements Serializable {
         this.clockTotalTime = clockTotalTime;
     }
 
-    public void setWhiteTimeRemaining(String whiteTimeRemaining) {
+    public void setWhiteTimeRemaining(Integer whiteTimeRemaining) {
         this.whiteTimeRemaining = whiteTimeRemaining;
     }
 
-    public void setBlackTimeRemaining(String blackTimeRemaining) {
+    public void setBlackTimeRemaining(Integer blackTimeRemaining) {
         this.blackTimeRemaining = blackTimeRemaining;
     }
 
@@ -374,27 +375,19 @@ public class ChessGame implements Serializable {
         this.playerRatingDiff = playerRatingDiff;
     }
 
-    public void setPlayerTimeRemaining(String playerTimeRemaining) {
+    public void setPlayerTimeRemaining(Integer playerTimeRemaining) {
         this.playerTimeRemaining = playerTimeRemaining;
     }
 
-    public void setOpponentTimeRemaining(String opponentTimeRemaining) {
+    public void setOpponentTimeRemaining(Integer opponentTimeRemaining) {
         this.opponentTimeRemaining = opponentTimeRemaining;
     }
 
-    public String getPlayerTimeSurplus() {
+    public Integer getPlayerTimeEndingSurplus() {
         return playerTimeEndingSurplus;
     }
 
-    public void setPlayerTimeSurplus(String playerTimeSurplus) {
-        this.playerTimeEndingSurplus = playerTimeSurplus;
-    }
-
-    public String getPlayerTimeEndingSurplus() {
-        return playerTimeEndingSurplus;
-    }
-
-    public void setPlayerTimeEndingSurplus(String playerTimeEndingSurplus) {
+    public void setPlayerTimeEndingSurplus(Integer playerTimeEndingSurplus) {
         this.playerTimeEndingSurplus = playerTimeEndingSurplus;
     }
 
