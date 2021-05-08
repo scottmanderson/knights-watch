@@ -19,7 +19,7 @@ trait TransformationLogic {
     seconds
   }
 
-  private val parseTimeUDF = udf((pgn: String) => {
+  private val parseTimeUDF = udf((pgn: String, whitePlayerId: String) => {
     val clkPattern: Regex = """\{ \[%clk (\d+:\d+:\d+)] }""".r
 
     val groupClockRecords =
@@ -32,6 +32,16 @@ trait TransformationLogic {
       for (clock <- 1 until groupClockRecords.length by 2)
         yield groupClockRecords(clock)
 
+    val whiteTimeSurplusHistory =
+      for (clock <- blackTimeHistory.indices) // Use blackTimeHistory to avoid pulling nonexistent black move on games where white moved last
+        yield Some(whiteTimeHistory(clock)).getOrElse(0) - Some(blackTimeHistory(clock)).getOrElse(0)
+
+    val blackTimeSurplusHistory =
+      for (clock <- blackTimeHistory.indices)
+        yield Some(blackTimeHistory(clock)).getOrElse(0) - Some(whiteTimeHistory(clock)).getOrElse(0)
+
+
+
     val clockFields: Map[String, String] = Map(
       "whiteTimeRemaining" -> (if (whiteTimeHistory.nonEmpty)
                                  whiteTimeHistory.last.toString
@@ -40,7 +50,11 @@ trait TransformationLogic {
                                  blackTimeHistory.last.toString
                                else ""),
       "whiteTimeHistory" -> whiteTimeHistory.mkString(","),
-      "blackTimeHistory" -> blackTimeHistory.mkString(",")
+      "blackTimeHistory" -> blackTimeHistory.mkString(","),
+      "whiteTimeSurplusHistory" -> whiteTimeSurplusHistory.mkString(","),  // keeping Time Surplus Histories by color as they may be useful to determine if there is a general time management bias
+      "blackTimeSurplusHistory" -> blackTimeSurplusHistory.mkString(","),
+      "playerTimeSurplusHistory" -> (if (whitePlayerId == playerHandle) whiteTimeSurplusHistory.mkString(",") else blackTimeSurplusHistory.mkString(",")),
+      "opponentTimeSurplusHistory" -> (if (whitePlayerId == playerHandle) blackTimeSurplusHistory.mkString(",") else whiteTimeSurplusHistory.mkString(",")),
     )
     clockFields
   })
@@ -53,7 +67,7 @@ trait TransformationLogic {
     // Make transformations below before write to DB
     val chessGamesTransform: DataFrame =
       chessGamesDataset
-        .withColumn("timeOutput", parseTimeUDF(col("pgn")))
+        .withColumn("timeOutput", parseTimeUDF(col("pgn"), col("whitePlayerId")))
         .select(
           col("*"),
           col("timeOutput")
@@ -63,7 +77,15 @@ trait TransformationLogic {
             .getItem("blackTimeRemaining")
             .as("blackTimeRemaining"),
           col("timeOutput").getItem("whiteTimeHistory").as("whiteTimeHistory"),
-          col("timeOutput").getItem("blackTimeHistory").as("blackTimeHistory")
+          col("timeOutput").getItem("blackTimeHistory").as("blackTimeHistory"),
+          col("timeOutput")
+            .getItem("whiteTimeSurplusHistory").as("whiteTimeSurplusHistory"),
+          col("timeOutput")
+            .getItem("blackTimeSurplusHistory").as("blackTimeSurplusHistory"),
+          col("timeOutput")
+            .getItem("playerTimeSurplusHistory").as("playerTimeSurplusHistory"),
+          col("timeOutput")
+            .getItem("opponentTimeSurplusHistory").as("opponentTimeSurplusHistory")
         )
         .drop(col("timeOutput"))
         .withColumn(
@@ -139,8 +161,7 @@ trait TransformationLogic {
             )
             .otherwise(null)
         )
-        .withColumn("playerTimeSurplus", col("playerTimeRemaining") - col("opponentTimeRemaining"))
-
+        .withColumn("playerTimeEndingSurplus", col("playerTimeRemaining") - col("opponentTimeRemaining"))
     chessGamesTransform
   }
 
@@ -173,6 +194,10 @@ trait TransformationLogic {
       .withColumnRenamed("playerRatingDiff", "player_rating_diff")
       .withColumnRenamed("playerTimeRemaining", "player_time_remaining")
       .withColumnRenamed("opponentTimeRemaining", "opponent_time_remaining")
-      .withColumnRenamed("playerTimeSurplus", "player_time_surplus")
+      .withColumnRenamed("playerTimeEndingSurplus", "player_time_ending_surplus")
+      .withColumnRenamed("whiteTimeSurplusHistory", "white_time_surplus_history")
+      .withColumnRenamed("blackTimeSurplusHistory", "black_time_surplus_history")
+      .withColumnRenamed("playerTimeSurplusHistory", "player_time_surplus_history")
+      .withColumnRenamed("opponentTimeSurplusHistory", "opponent_time_surplus_history")
   }
 }
