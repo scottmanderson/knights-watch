@@ -11,11 +11,19 @@ trait TransformationLogic {
 
   val playerHandle: String = UserConfig.getValue("lichess.handle")
 
+  def convertClockTimeToSeconds(clockTime: String): Int = {
+    val digitExtractPattern: Regex = """(\d+):(\d+):(\d+)""".r
+    val seconds: Int = digitExtractPattern.findFirstMatchIn(clockTime).map(_.group(1)).getOrElse(0).toString.toInt * 60 * 60 +
+      digitExtractPattern.findFirstMatchIn(clockTime).map(_.group(2)).getOrElse(0).toString.toInt * 60 +
+      digitExtractPattern.findFirstMatchIn(clockTime).map(_.group(3)).getOrElse(0).toString.toInt
+    seconds
+  }
+
   private val parseTimeUDF = udf((pgn: String) => {
     val clkPattern: Regex = """\{ \[%clk (\d+:\d+:\d+)] }""".r
 
     val groupClockRecords =
-      clkPattern.findAllMatchIn(pgn).map(_.group(1)).toArray
+      clkPattern.findAllMatchIn(pgn).map(_.group(1)).map(convertClockTimeToSeconds).toArray
 
     val whiteTimeHistory =
       for (clock <- 0 until groupClockRecords.length by 2)
@@ -26,10 +34,10 @@ trait TransformationLogic {
 
     val clockFields: Map[String, String] = Map(
       "whiteTimeRemaining" -> (if (whiteTimeHistory.nonEmpty)
-                                 whiteTimeHistory.last
+                                 whiteTimeHistory.last.toString
                                else ""),
       "blackTimeRemaining" -> (if (blackTimeHistory.nonEmpty)
-                                 blackTimeHistory.last
+                                 blackTimeHistory.last.toString
                                else ""),
       "whiteTimeHistory" -> whiteTimeHistory.mkString(","),
       "blackTimeHistory" -> blackTimeHistory.mkString(",")
@@ -131,6 +139,7 @@ trait TransformationLogic {
             )
             .otherwise(null)
         )
+        .withColumn("playerTimeSurplus", col("playerTimeRemaining") - col("opponentTimeRemaining"))
 
     chessGamesTransform
   }
@@ -164,5 +173,6 @@ trait TransformationLogic {
       .withColumnRenamed("playerRatingDiff", "player_rating_diff")
       .withColumnRenamed("playerTimeRemaining", "player_time_remaining")
       .withColumnRenamed("opponentTimeRemaining", "opponent_time_remaining")
+      .withColumnRenamed("playerTimeSurplus", "player_time_surplus")
   }
 }

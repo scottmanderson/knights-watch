@@ -8,7 +8,8 @@ import utils.Constants.{APP_NAME, ERROR_LOG_LEVEL, SPARK_MASTER}
 import utils.Logging
 
 trait Job
-    extends Logging
+    extends Serializable
+    with Logging
     with KafkaService
     with PostgresqlService
     with TransformationLogic {
