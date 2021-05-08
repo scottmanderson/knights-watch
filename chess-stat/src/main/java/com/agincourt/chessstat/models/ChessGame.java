@@ -47,7 +47,15 @@ public class ChessGame implements Serializable {
     private Integer playerRatingDiff;
     private String playerTimeRemaining;
     private String opponentTimeRemaining;
-
+    private String playerTimeEndingSurplus;
+    @Column(columnDefinition = "text")
+    private String whiteTimeSurplusHistory;
+    @Column(columnDefinition = "text")
+    private String blackTimeSurplusHistory;
+    @Column(columnDefinition = "text")
+    private String playerTimeSurplusHistory;
+    @Column(columnDefinition = "text")
+    private String opponentTimeSurplusHistory;
 
     public ChessGame() {
     }
@@ -59,7 +67,9 @@ public class ChessGame implements Serializable {
                      Integer openingPly, String moves, String pgn, Integer clockInitial, Integer clockIncrement,
                      Integer clockTotalTime, String whiteTimeRemaining, String blackTimeRemaining, String whiteTimeHistory,
                      String blackTimeHistory, Double playerScore, String playerColor, Integer playerRating,
-                     Integer playerRatingDiff, String playerTimeRemaining, String opponentTimeRemaining) {
+                     Integer playerRatingDiff, String playerTimeRemaining, String opponentTimeRemaining,
+                     String playerTimeEndingSurplus, String whiteTimeSurplusHistory, String blackTimeSurplusHistory,
+                     String playerTimeSurplusHistory, String opponentTimeSurplusHistory) {
         this.lichessId = lichessId;
         this.rated = rated;
         this.variant = variant;
@@ -93,6 +103,11 @@ public class ChessGame implements Serializable {
         this.playerRatingDiff = playerRatingDiff;
         this.playerTimeRemaining = playerTimeRemaining;
         this.opponentTimeRemaining = opponentTimeRemaining;
+        this.playerTimeEndingSurplus = playerTimeEndingSurplus;
+        this.whiteTimeSurplusHistory = whiteTimeSurplusHistory;
+        this.blackTimeSurplusHistory = blackTimeSurplusHistory;
+        this.playerTimeSurplusHistory = playerTimeSurplusHistory;
+        this.opponentTimeSurplusHistory = opponentTimeSurplusHistory;
     }
 
     public Long getId() {
@@ -367,5 +382,51 @@ public class ChessGame implements Serializable {
         this.opponentTimeRemaining = opponentTimeRemaining;
     }
 
+    public String getPlayerTimeSurplus() {
+        return playerTimeEndingSurplus;
+    }
 
+    public void setPlayerTimeSurplus(String playerTimeSurplus) {
+        this.playerTimeEndingSurplus = playerTimeSurplus;
+    }
+
+    public String getPlayerTimeEndingSurplus() {
+        return playerTimeEndingSurplus;
+    }
+
+    public void setPlayerTimeEndingSurplus(String playerTimeEndingSurplus) {
+        this.playerTimeEndingSurplus = playerTimeEndingSurplus;
+    }
+
+    public String getWhiteTimeSurplusHistory() {
+        return whiteTimeSurplusHistory;
+    }
+
+    public void setWhiteTimeSurplusHistory(String whiteTimeSurplusHistory) {
+        this.whiteTimeSurplusHistory = whiteTimeSurplusHistory;
+    }
+
+    public String getBlackTimeSurplusHistory() {
+        return blackTimeSurplusHistory;
+    }
+
+    public void setBlackTimeSurplusHistory(String blackTimeSurplusHistory) {
+        this.blackTimeSurplusHistory = blackTimeSurplusHistory;
+    }
+
+    public String getPlayerTimeSurplusHistory() {
+        return playerTimeSurplusHistory;
+    }
+
+    public void setPlayerTimeSurplusHistory(String playerTimeSurplusHistory) {
+        this.playerTimeSurplusHistory = playerTimeSurplusHistory;
+    }
+
+    public String getOpponentTimeSurplusHistory() {
+        return opponentTimeSurplusHistory;
+    }
+
+    public void setOpponentTimeSurplusHistory(String opponentTimeSurplusHistory) {
+        this.opponentTimeSurplusHistory = opponentTimeSurplusHistory;
+    }
 }
