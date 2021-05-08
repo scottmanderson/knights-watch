@@ -10,15 +10,6 @@ import scala.util.matching.Regex
 trait TransformationLogic {
 
   val playerHandle: String = UserConfig.getValue("lichess.handle")
-
-  def convertClockTimeToSeconds(clockTime: String): Int = {
-    val digitExtractPattern: Regex = """(\d+):(\d+):(\d+)""".r
-    val seconds: Int = digitExtractPattern.findFirstMatchIn(clockTime).map(_.group(1)).getOrElse(0).toString.toInt * 60 * 60 +
-      digitExtractPattern.findFirstMatchIn(clockTime).map(_.group(2)).getOrElse(0).toString.toInt * 60 +
-      digitExtractPattern.findFirstMatchIn(clockTime).map(_.group(3)).getOrElse(0).toString.toInt
-    seconds
-  }
-
   private val parseTimeUDF = udf((pgn: String, whitePlayerId: String) => {
     val clkPattern: Regex = """\{ \[%clk (\d+:\d+:\d+)] }""".r
 
@@ -40,15 +31,14 @@ trait TransformationLogic {
       for (clock <- blackTimeHistory.indices)
         yield Some(blackTimeHistory(clock)).getOrElse(0) - Some(whiteTimeHistory(clock)).getOrElse(0)
 
-
+    val whiteTimeRemaining = if (whiteTimeHistory.nonEmpty) whiteTimeHistory.last.toString else ""
+    val blackTimeRemaining = if (blackTimeHistory.nonEmpty) blackTimeHistory.last.toString else ""
 
     val clockFields: Map[String, String] = Map(
-      "whiteTimeRemaining" -> (if (whiteTimeHistory.nonEmpty)
-                                 whiteTimeHistory.last.toString
-                               else ""),
-      "blackTimeRemaining" -> (if (blackTimeHistory.nonEmpty)
-                                 blackTimeHistory.last.toString
-                               else ""),
+      "whiteTimeRemaining" -> whiteTimeRemaining,
+      "blackTimeRemaining" -> blackTimeRemaining,
+      "playerTimeRemaining" -> (if (whitePlayerId == playerHandle) whiteTimeRemaining else blackTimeRemaining),
+      "opponentTimeRemaining" -> (if (whitePlayerId == playerHandle) blackTimeRemaining else whiteTimeRemaining),
       "whiteTimeHistory" -> whiteTimeHistory.mkString(","),
       "blackTimeHistory" -> blackTimeHistory.mkString(","),
       "whiteTimeSurplusHistory" -> whiteTimeSurplusHistory.mkString(","),  // keeping Time Surplus Histories by color as they may be useful to determine if there is a general time management bias
@@ -58,6 +48,14 @@ trait TransformationLogic {
     )
     clockFields
   })
+
+  def convertClockTimeToSeconds(clockTime: String): Int = {
+    val digitExtractPattern: Regex = """(\d+):(\d+):(\d+)""".r
+    val seconds: Int = digitExtractPattern.findFirstMatchIn(clockTime).map(_.group(1)).getOrElse(0).toString.toInt * 60 * 60 +
+      digitExtractPattern.findFirstMatchIn(clockTime).map(_.group(2)).getOrElse(0).toString.toInt * 60 +
+      digitExtractPattern.findFirstMatchIn(clockTime).map(_.group(3)).getOrElse(0).toString.toInt
+    seconds
+  }
 
   def runTransformations(
       chessGamesDataset: Dataset[ChessGameKafkaRecord],
@@ -71,11 +69,13 @@ trait TransformationLogic {
         .select(
           col("*"),
           col("timeOutput")
-            .getItem("whiteTimeRemaining")
-            .as("whiteTimeRemaining"),
+            .getItem("whiteTimeRemaining").as("whiteTimeRemaining"),
           col("timeOutput")
-            .getItem("blackTimeRemaining")
-            .as("blackTimeRemaining"),
+            .getItem("blackTimeRemaining").as("blackTimeRemaining"),
+          col("timeOutput")
+            .getItem("playerTimeRemaining").as("playerTimeRemaining"),
+          col("timeOutput")
+            .getItem("opponentTimeRemaining").as("opponentTimeRemaining"),
           col("timeOutput").getItem("whiteTimeHistory").as("whiteTimeHistory"),
           col("timeOutput").getItem("blackTimeHistory").as("blackTimeHistory"),
           col("timeOutput")
@@ -136,28 +136,6 @@ trait TransformationLogic {
           ).when(
               col("blackPlayerId") === playerHandle,
               col("blackPlayerRatingDiff")
-            )
-            .otherwise(null)
-        )
-        .withColumn(
-          "playerTimeRemaining",
-          when(
-            col("whitePlayerId") === playerHandle,
-            col("whiteTimeRemaining")
-          ).when(
-              col("blackPlayerId") === playerHandle,
-              col("blackTimeRemaining")
-            )
-            .otherwise(null)
-        )
-        .withColumn(
-          "opponentTimeRemaining",
-          when(
-            col("whitePlayerId") =!= playerHandle,
-            col("whiteTimeRemaining")
-          ).when(
-              col("blackPlayerId") =!= playerHandle,
-              col("blackTimeRemaining")
             )
             .otherwise(null)
         )
