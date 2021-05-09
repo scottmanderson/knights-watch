@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { IState } from "../redux/storeTypes";
 import { getPlayerStats } from "../redux/actions/actionCreators";
 
-const PlayerRatingHistoryChart: React.FC = () => {
+const PlayerTimeManagementHistoryChart: React.FC = () => {
   const theme = useTheme();
   const playerStats = useSelector((state: IState) => state.playerStats);
   const dispatch = useDispatch();
@@ -20,18 +20,21 @@ const PlayerRatingHistoryChart: React.FC = () => {
     <Plot
       data={[
         {
-          name: "Rating",
-          x: playerStats.ratingsHistoryDates.map((x) => new Date(x)),
-          y: playerStats.ratingsHistory,
+          name: "Game End Time Surplus (Deficit)",
+          y: playerStats.playerTimeEndingSurpluses,
+          type: "bar",
         },
       ]}
       layout={{
         title: {
-          text: "Lichess Rating History",
+          text: "Time Surplus (Deficit)",
+        },
+        xaxis: {
+          visible: false,
         },
       }}
     />
   );
 };
 
-export default PlayerRatingHistoryChart;
+export default PlayerTimeManagementHistoryChart;

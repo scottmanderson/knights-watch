@@ -22,6 +22,9 @@ export const initialState: IState = {
     drawCount: 1,
     ratingsHistory: [1500],
     ratingsHistoryDates: [1619987320226],
+    playerTimeEndingSurpluses: [0],
+    playerRatingDiff: [0],
+    score: [0.5],
   },
 };
 

@@ -5,6 +5,9 @@ export interface IPlayerStats {
   drawCount: number;
   ratingsHistory: number[];
   ratingsHistoryDates: number[];
+  playerTimeEndingSurpluses: number[];
+  playerRatingDiff: number[];
+  score: number[];
 }
 
 export interface IState {
