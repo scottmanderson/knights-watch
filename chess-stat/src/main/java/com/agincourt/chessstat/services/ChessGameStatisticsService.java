@@ -32,7 +32,10 @@ public interface ChessGameStatisticsService extends ChessGameRepository {
         stats.drawCount = games.stream().filter(g -> g.getPlayerScore() == 0.5).count();
         stats.ratingsHistory = games.stream().map(ChessGame::getPlayerRating).collect(Collectors.toList());
         stats.ratingsHistoryDates = games.stream().map(ChessGame::getLastMoveAt).collect(Collectors.toList());
-        stats.playerTimeEndingSurpluses = games.stream().map(ChessGame::getPlayerTimeEndingSurplus).collect(Collectors.toList());
+        stats.playerTimeEndingSurpluses = games.stream()
+                .map(ChessGame::getPlayerTimeEndingSurplus).collect(Collectors.toList());
+        stats.playerRatingDiff = games.stream().map(ChessGame::getPlayerRatingDiff).collect(Collectors.toList());
+        stats.scores = games.stream().map(ChessGame::getPlayerScore).collect(Collectors.toList());
 
         return jsonifyStats(stats);
     }

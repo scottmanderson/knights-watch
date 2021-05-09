@@ -11,6 +11,8 @@ public class PlayerStats {
     List<Integer> ratingsHistory;
     List<Long> ratingsHistoryDates;
     List<Integer> playerTimeEndingSurpluses;
+    List<Integer> playerRatingDiff;
+    List<Double> scores;
 
     PlayerStats() {
     }
@@ -69,5 +71,21 @@ public class PlayerStats {
 
     public void setPlayerTimeEndingSurpluses(List<Integer> playerTimeEndingSurpluses) {
         this.playerTimeEndingSurpluses = playerTimeEndingSurpluses;
+    }
+
+    public List<Integer> getPlayerRatingDiff() {
+        return playerRatingDiff;
+    }
+
+    public void setPlayerRatingDiff(List<Integer> playerRatingDiff) {
+        this.playerRatingDiff = playerRatingDiff;
+    }
+
+    public List<Double> getScore() {
+        return scores;
+    }
+
+    public void setScore(List<Double> score) {
+        this.scores = score;
     }
 }
